@@ -28,7 +28,8 @@ namespace BugColony.Scripts.LifetimeScopes
             builder.Register<FoodSpawner>(Lifetime.Singleton);
             
             builder.RegisterEntryPoint<ScoreManager>().AsSelf();
-            
+
+            builder.RegisterEntryPoint<ApplicationInitializer>();
             builder.RegisterEntryPoint<BugSpawner>();
             builder.RegisterEntryPoint<FoodSpawner>();
         }

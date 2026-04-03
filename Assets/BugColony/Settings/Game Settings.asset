@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 007b833201e2483094f5214ced411f53, type: 3}
   m_Name: Game Settings
   m_EditorClassIdentifier: Assembly-CSharp::BugColony.Scripts.Settings.GameSettings
+  _targetFPS: 120
   _arenaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 10, y: 0, z: 10}
