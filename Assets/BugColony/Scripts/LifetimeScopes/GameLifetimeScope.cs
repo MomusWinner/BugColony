@@ -6,7 +6,7 @@ using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
-namespace BugColony.Scripts
+namespace BugColony.Scripts.LifetimeScopes
 {
     public class  GameLifetimeScope : LifetimeScope
     {
@@ -14,24 +14,23 @@ namespace BugColony.Scripts
         
         protected override void Configure(IContainerBuilder builder)
         {
-            var options = builder.RegisterMessagePipe();
+            builder.RegisterMessagePipe();
             builder.RegisterBuildCallback(c => GlobalMessagePipe.SetProvider(c.AsServiceProvider()));
             
             builder.RegisterInstance(_gameSettings);
-            builder.RegisterInstance(_gameSettings.BugCollection);
-            builder.RegisterInstance(_gameSettings.FoodCollection);
             
-            builder.Register<BugManager>(Lifetime.Singleton);
+            builder.Register<AliveBugCollection>(Lifetime.Singleton);
             builder.Register<BugFactory>(Lifetime.Singleton).As<IBugFactory>();
             builder.Register<BugSpawner>(Lifetime.Singleton);
             
-            builder.Register<FoodManager>(Lifetime.Singleton);
-            builder.Register<FoodFactory>(Lifetime.Singleton).As<IFoodFactory>();
+            builder.Register<AliveFoodCollection>(Lifetime.Singleton);
+            builder.RegisterEntryPoint<FoodPool>().As<IFoodFactory>();
             builder.Register<FoodSpawner>(Lifetime.Singleton);
             
             builder.RegisterEntryPoint<ScoreManager>().AsSelf();
             
-            builder.RegisterEntryPoint<EntryPoint>();
+            builder.RegisterEntryPoint<BugSpawner>();
+            builder.RegisterEntryPoint<FoodSpawner>();
         }
     }
 }

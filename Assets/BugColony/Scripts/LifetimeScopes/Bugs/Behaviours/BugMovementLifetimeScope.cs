@@ -1,5 +1,5 @@
 ﻿using System;
-using BugColony.Scripts.Bugs.Behaviours.Eating;
+using System.Collections.Generic;
 using BugColony.Scripts.Bugs.Behaviours.Movement;
 using BugColony.Scripts.Settings.Bugs.Behaviours.Movements;
 using VContainer;
@@ -8,17 +8,17 @@ namespace BugColony.Scripts.LifetimeScopes.Bugs.Behaviours
 {
     public static class BugMovementLifetimeScope
     {
+        private static Dictionary<Type, Type> _settingTypeToBehaviour = new()
+        {
+            { typeof(BugWalkingSettings), typeof(BugWalking) },
+        };
+        
         public static void RegisterBugMovementBehaviour(this IContainerBuilder builder, BugMovementSettings settings)
         {
-            switch (settings)
-            {
-                case BugWalkingSettings walking:
-                    builder.RegisterInstance(walking);
-                    builder.Register<IBugMovement, BugWalking>(Lifetime.Scoped);
-                    return;
-                default:
-                    throw new NotImplementedException();
-            }
+            if (!_settingTypeToBehaviour.TryGetValue(settings.GetType(), out var behaviour))
+                throw new ArgumentException("Your bug movement settings are not registered.");
+            builder.RegisterInstance(settings).As(settings.GetType());
+            builder.Register(behaviour, Lifetime.Scoped).As(typeof(IBugMovement));
         }
     }
 }

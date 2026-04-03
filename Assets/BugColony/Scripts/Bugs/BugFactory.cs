@@ -11,8 +11,8 @@ namespace BugColony.Scripts.Bugs
     {
         [Inject] private IObjectResolver _container;
         
-        [Inject] private FoodManager _foodManager;
-        [Inject] private BugManager _bugManager;
+        [Inject] private AliveFoodCollection _aliveFoodCollection;
+        [Inject] private AliveBugCollection _aliveBugCollection;
         [Inject] private IPublisher<BugCreatedMessage> _createBugPublisher;
         
         public Bug Create(BugSettings settings)

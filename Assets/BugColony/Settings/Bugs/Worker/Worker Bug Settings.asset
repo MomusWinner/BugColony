@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44cfee5f3ab24ce997e43a910e368a67, type: 3}
+  m_Name: Worker Bug Settings
+  m_EditorClassIdentifier: Assembly-CSharp::BugColony.Scripts.Settings.Bugs.CommonBugSettings
+  _prefab: {fileID: 6607449279303074585, guid: 0635b9349304ec246a186970395a7e48, type: 3}
+  _nutritionalValue: 1
+  _eatingDistance: 0.8
+  _diet: 1
+  _hasLifeTime: 0
+  _lifeTime: 0
+  _movementSettings: {fileID: 11400000, guid: 5b5df60fe212cb74da2c009b87006a62, type: 2}
+  _splitSettings: {fileID: 11400000, guid: 55cd6803a00522940ba75581cf58fa3d, type: 2}

@@ -1,27 +1,25 @@
 ﻿using System;
 using BugColony.Helpers;
 using BugColony.Scripts.Settings;
-using BugColony.Scripts.Settings.Foods;
 using R3;
 using VContainer;
-using Random = UnityEngine.Random;
+using VContainer.Unity;
 
 namespace BugColony.Scripts.Foods
 {
-    public class FoodSpawner
+    public class FoodSpawner : IStartable
     {
         [Inject] private IFoodFactory _factory;
-        [Inject] private FoodCollectionSettings _foodSettings;
         [Inject] private GameSettings _gameSettings;
 
         public void Start()
         {
-            if (_gameSettings.SpawnSettings.FoodSpawnInterval == 0) return;
+            if (_gameSettings.SpawnerSettings.FoodSpawnInterval == 0) return;
             Observable
-            .Interval(TimeSpan.FromSeconds(_gameSettings.SpawnSettings.FoodSpawnInterval))
+            .Interval(TimeSpan.FromSeconds(_gameSettings.SpawnerSettings.FoodSpawnInterval))
             .Subscribe( _ => 
             {
-                var bug = _factory.Create(_foodSettings.Foods[Random.Range(0, _foodSettings.Foods.Count)]);
+                var bug = _factory.Create();
                 bug.transform.position = RandomHelper.InsideBounds(_gameSettings.ArenaBounds);
             });
         }

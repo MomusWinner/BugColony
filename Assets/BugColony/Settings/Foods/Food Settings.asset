@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Food Settings
   m_EditorClassIdentifier: Assembly-CSharp::BugColony.Scripts.Settings.Foods.FoodSettings
   _prefab: {fileID: 2250881567864514372, guid: 532740ae6480596408beae2c35a7ee2c, type: 3}
-  _nutritionalValue: 10
+  _nutritionalValue: 1

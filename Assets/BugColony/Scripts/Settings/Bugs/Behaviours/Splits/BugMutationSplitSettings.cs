@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace BugColony.Scripts.Settings.Bugs.Behaviours.Splits
 {

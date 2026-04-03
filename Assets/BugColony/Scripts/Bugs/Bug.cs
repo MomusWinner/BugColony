@@ -1,8 +1,4 @@
 ﻿using System;
-using BugColony.Scripts.Bugs.Behaviours;
-using BugColony.Scripts.Bugs.Behaviours.Eating;
-using BugColony.Scripts.Bugs.Behaviours.Movement;
-using BugColony.Scripts.Bugs.Behaviours.Splits;
 using BugColony.Scripts.Settings.Bugs;
 using Cysharp.Threading.Tasks;
 using R3;
@@ -11,100 +7,61 @@ using VContainer;
 
 namespace BugColony.Scripts.Bugs
 {
-    public class Bug : ITarget
+    public abstract class Bug : ITarget
     {
         public event Action<Bug> OnDie;
-        public ResourceType ResourceType => ResourceType.Bug;
-        public int Gen { get => _state.Gen; set => _state.Gen = value;}
-        public ResourceType Diet => _settings.Diet;
-        public Transform Movable => _state.Movable;
+        public virtual ResourceType ResourceType => ResourceType.Bug;
+        public int Gen { get => State.Gen; set => State.Gen = value;}
+        public ResourceType Diet => Settings.Diet;
+        public Vector3 Position {get => View.transform.position; set => View.transform.position = value;}
         
-        [Inject] private BugView _view;
-        [Inject] private BugState _state;
-        [Inject] private BugSettings _settings;
-        [Inject] private IBugEating _eatingBehaviour;
-        [Inject] private IBugMovement _movementBehaviour;
-        [Inject] private IBugSplit _splitBehaviour;
-        [Inject] private IBugTargetSelector _targetSelector;
-        
-        private bool _isEating;
+        [Inject] protected BugState State;
+        [Inject] protected BugSettings Settings;
+        [Inject] protected BugView View;
 
-        public void Start()
+        public virtual void Start()
         {
-            _view.Destroyed += _ =>
+            View.Destroyed += _ =>
             {
-                if (IsAlive()) Die().Forget();
+                if (IsAlive()) State.Dispose();;
             };
             
-            _state.Movable = _view.transform;
-            
-            if (_settings.HasLifeTime)
+            if (Settings.HasLifeTime)
             {
                 Observable
-                    .Interval(TimeSpan.FromSeconds(_settings.LifeTime))
-                    .Subscribe(_ => Die())
-                    .RegisterTo(_state.OnDestroyCts.Token);
+                    .Interval(TimeSpan.FromSeconds(Settings.LifeTime))
+                    .Subscribe(_ => Die().Forget())
+                    .RegisterTo(State.OnDestroyCts.Token);
             }
             
             Observable
-                .EveryUpdate(_state.OnDestroyCts.Token)
+                .EveryUpdate(State.OnDestroyCts.Token)
                 .Subscribe(_ => Update())
-                .RegisterTo(_state.OnDestroyCts.Token);
+                .RegisterTo(State.OnDestroyCts.Token);
         }
 
-        private void Update()
-        {
-            if (_isEating) return;
-            if (_state.Target is null || !_state.Target.IsAlive()) 
-                _state.Target = _targetSelector.GetTarget();
-            
-            if (_state.Target is not null && _state.Target.IsAlive())
-            {
-                if ((_state.Target.GetPosition() - Movable.position).magnitude <= _settings.EatingDistance)
-                {
-                    EatWithDelayAsync().Forget();
-                }
-                else
-                {
-                    _movementBehaviour.MoveToTarget(_state.Target.GetPosition());
-                }
-            }
-            _splitBehaviour.TrySplit();
-        }
+        protected abstract void Update();
 
-        public int Eat()
+        public virtual int Eat()
         {
             Die().Forget();
-            return _settings.NutritionalValue;
+            return Settings.NutritionalValue;
         }
 
-        private async UniTaskVoid Die()
+        protected virtual async UniTaskVoid Die()
         {
-            _state.IsDead = true;
-            _state.Dispose();
+            State.IsDead = true;
+            State.Dispose();
             OnDie?.Invoke(this);
-            if (_view.IsAlive())
+            if (View.IsAlive())
             {
-                await _view.StartDieAnimation();
-                _view.Destroy();
+                await View.StartDieAnimation();
+                View.Destroy();
             }
         }
         
-        public Vector3 GetPosition() => Movable.position;
+        public virtual Vector3 GetPosition() => View.transform.position;
 
-        public bool IsAlive() => !_state.IsDead;
-
-        
-        private async UniTaskVoid EatWithDelayAsync()
-        {
-            _isEating = true;
-            await _view.StartEatAnimation(_state.Target.GetPosition());
-            
-            if (_state.OnDestroyCts.IsCancellationRequested)
-                return;
-            if (_state.Target != null && _state.Target.IsAlive())
-                _state.Energy = _state.Target.Eat();
-            _isEating = false;
-        }
+        public virtual bool IsAlive() => !State.IsDead;
     }
 }

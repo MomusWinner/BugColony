@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace BugColony.Scripts.Settings.Bugs
 {
-    [CreateAssetMenu(fileName = "Bug Settings", menuName = "Settings/Bugs/Bug", order = 0)]
     public class BugSettings : ScriptableObject
     {
         [SerializeField] private BugView _prefab;

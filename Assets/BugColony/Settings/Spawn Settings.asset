@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20b662269e9a44dfb445086d5bcc041c, type: 3}
   m_Name: Spawn Settings
   m_EditorClassIdentifier: Assembly-CSharp::BugColony.Scripts.Settings.SpawnSettings
-  _workerBugSpawnInterval: 1
-  _foodSpawnInterval: 1
+  _bug: {fileID: 11400000, guid: f0fafb256c8c4e0409a72da512600a2a, type: 2}
+  _food: {fileID: 11400000, guid: 28a8e253ca2b86a4cad2e0492d75f256, type: 2}
+  _foodSpawnInterval: 0.5

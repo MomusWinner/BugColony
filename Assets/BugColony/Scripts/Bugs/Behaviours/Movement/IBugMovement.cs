@@ -6,5 +6,6 @@ namespace BugColony.Scripts.Bugs.Behaviours.Movement
     {
         float Speed { get; set; }
         public void MoveToTarget(Vector3 target);
+        public void StopMoving();
     }
 }
