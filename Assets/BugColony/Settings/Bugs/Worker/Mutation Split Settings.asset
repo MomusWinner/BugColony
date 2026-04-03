@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Mutation Split Settings
   m_EditorClassIdentifier: Assembly-CSharp::BugColony.Scripts.Settings.Bugs.Behaviours.Splits.BugMutationSplitSettings
   _requiredEnergyForSplitting: 2
+  _spawnRadius: 2
   _chance: 0.1
   _requiredBugCount: 10
   _mutatedBug: {fileID: 11400000, guid: 59ebd4ce21d05bb4095947185f602b11, type: 2}
-  _spawnRadius: 2

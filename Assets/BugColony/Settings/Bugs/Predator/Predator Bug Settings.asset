@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BugColony.Scripts.Settings.Bugs.CommonBugSettings
   _prefab: {fileID: 6607449279303074585, guid: f41261b6d367fe845aed38462e304234, type: 3}
   _nutritionalValue: 1
-  _eatingDistance: 1
+  _eatingDistance: 1.5
   _diet: -1
   _hasLifeTime: 1
   _lifeTime: 10
