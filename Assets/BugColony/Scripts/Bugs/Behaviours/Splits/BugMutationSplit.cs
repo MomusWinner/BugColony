@@ -28,10 +28,15 @@ namespace BugColony.Scripts.Bugs.Behaviours.Splits
             _factory = factory;
             _aliveBugCollection = aliveBugCollection;
         }
-        
-        public bool TrySplit()
+
+        public bool CanSplit()
         {
-            if (_state.Energy < _splitSettings.RequiredEnergyForSplitting) return false;
+            return _state.Energy > _splitSettings.RequiredEnergyForSplitting;
+        }
+        
+        public void Split()
+        {
+            if (!CanSplit()) return;
             
             Bug newBug = null;
             if (_splitSettings.RequiredBugCount <= _aliveBugCollection.Bugs.Count)
@@ -47,9 +52,14 @@ namespace BugColony.Scripts.Bugs.Behaviours.Splits
             newBug.Gen = newGen;
             _state.Gen = newGen;
             
-            newBug.Position = _view.transform.position;
+            Vector3 startPos = _view.transform.position;
+            newBug.Position = RandomPosition(startPos);
+            _view.transform.position = RandomPosition(startPos);
+        }
 
-            return true;
+        private Vector3 RandomPosition(Vector3 origin)
+        {
+            return origin + new Vector3(Random.Range(-1, 1), origin.y, Random.Range(-1, 1)) * _splitSettings.SpawnRadius;
         }
     }
 }

@@ -16,3 +16,4 @@ MonoBehaviour:
   _chance: 0
   _requiredBugCount: 0
   _mutatedBug: {fileID: 0}
+  _spawnRadius: 2

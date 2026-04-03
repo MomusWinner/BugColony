@@ -61,9 +61,10 @@ namespace BugColony.Scripts.Bugs
             Vector3 dir = targetPosition - transform.position;
             dir.y = 0;
             transform.rotation = Quaternion.LookRotation(dir);
-            transform.DOMove(transform.position + Vector3.up * 0.5f, 0.2f).WithCancellation(_eatingCts.Token);
+    
             return DOTween.Sequence()
-                .Append(transform.DOMove(transform.position + transform.forward * 0.8f, 0.4f))
+                .Join(transform.DOMove(transform.position + Vector3.up * 0.5f, 0.2f))
+                .Append(transform.DOMove(transform.position + transform.forward * 1.0f, 0.3f))
                 .Append(transform.DOMove(startPosition, 0.15f))
                 .WithCancellation(_eatingCts.Token);
         }

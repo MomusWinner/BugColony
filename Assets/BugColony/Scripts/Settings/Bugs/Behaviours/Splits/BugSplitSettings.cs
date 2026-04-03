@@ -6,5 +6,9 @@ namespace BugColony.Scripts.Settings.Bugs.Behaviours.Splits
     {
         [SerializeField] private int _requiredEnergyForSplitting;
         public int RequiredEnergyForSplitting => _requiredEnergyForSplitting;
+        
+        [SerializeField]
+        private float _spawnRadius;
+        public float SpawnRadius=> _spawnRadius;
     }
 }
