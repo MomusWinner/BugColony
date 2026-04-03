@@ -14,8 +14,8 @@ namespace BugColony.Scripts.Foods
         [Inject] private IPublisher<FoodCreatedMessage> _publisher;
         [Inject] private GameSettings _settings;
 
-        private const int DefaultCapacity = 10;
-        private const int MaxSize = 20;
+        private const int DefaultCapacity = 30;
+        private const int MaxSize = 300;
 
         private IObjectPool<FoodView> _pool;
         private GameObject _parent;
