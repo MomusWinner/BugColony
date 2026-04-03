@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BugColony.Scripts.Bugs
+namespace BugColony.Scripts
 {
     [Flags]
     public enum ResourceType

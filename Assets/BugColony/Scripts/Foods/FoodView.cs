@@ -1,5 +1,4 @@
 ﻿using System;
-using BugColony.Scripts.Bugs;
 using UnityEngine;
 using UnityEngine.Pool;
 

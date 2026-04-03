@@ -1,6 +1,4 @@
-﻿using BugColony.Scripts.Bugs;
-
-namespace BugColony.Scripts
+﻿namespace BugColony.Scripts
 {
     public interface IEatable
     {

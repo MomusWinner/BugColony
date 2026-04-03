@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace BugColony.Scripts.Bugs
+namespace BugColony.Scripts
 {
     public interface ITarget : IEatable
     {
