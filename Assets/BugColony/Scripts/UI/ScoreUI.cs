@@ -16,22 +16,18 @@ namespace BugColony.Scripts.UI
 
         private void Start()
         {
-            if (_disposables == null)
-            {
-                Debug.Log("Is null");
-            }
             _disposables.Add(_scoreManager.TotalDeadWorkerBug.Subscribe(value => {
-                _totalDeadWorkerBug.text = value.ToString();
+                _totalDeadWorkerBug.text = $"Total Dead Worker Bug {value.ToString()}";
             }));
             _disposables.Add(_scoreManager.TotalDeadPredatorBug.Subscribe(value =>
             {
-                _totalDeadPredatorBug.text = value.ToString();
+                _totalDeadPredatorBug.text = $"Total Dead Predator Bug {value.ToString()}";
             }));
         }
 
         private void OnDestroy()
         {
-            _disposables.Dispose();
+            _disposables?.Dispose();
         }
     }
 }
