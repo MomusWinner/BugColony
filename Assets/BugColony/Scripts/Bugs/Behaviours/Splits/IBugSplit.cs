@@ -4,5 +4,6 @@ namespace BugColony.Scripts.Bugs.Behaviours.Splits
     {
         bool CanSplit();
         void Split();
+        bool IsSplitting();
     }
 }

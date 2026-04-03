@@ -16,13 +16,15 @@ namespace BugColony.Scripts.Bugs
         
         protected override void Update()
         {
-            if (_splitBehaviour.CanSplit())
+            if (_splitBehaviour.CanSplit() && !_isEating)
             {
                 _movementBehaviour.StopMoving();
                 _splitBehaviour.Split();
+                return;
             }
             
-            if (_isEating) return;
+            if (_isEating || _splitBehaviour.IsSplitting()) return;
+            
             if (State.Target is null || !State.Target.IsAlive())
                 State.Target = _targetSelector.GetTarget();
             

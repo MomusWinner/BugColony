@@ -11,14 +11,16 @@ namespace BugColony.Scripts.Bugs
     {
         public event Action<Bug> OnDie;
         public virtual ResourceType ResourceType => ResourceType.Bug;
+        public bool Enabled { get => State.Enabled; set => State.Enabled = value; }
         public int Gen { get => State.Gen; set => State.Gen = value;}
         public ResourceType Diet => Settings.Diet;
         public Vector3 Position {get => View.transform.position; set => View.transform.position = value;}
+        public BugView View => _view;
         
         [Inject] protected BugState State;
         [Inject] protected BugSettings Settings;
-        [Inject] protected BugView View;
-
+        [Inject] private BugView _view;
+        
         public virtual void Start()
         {
             View.Destroyed += _ =>
@@ -36,7 +38,10 @@ namespace BugColony.Scripts.Bugs
             
             Observable
                 .EveryUpdate(State.OnDestroyCts.Token)
-                .Subscribe(_ => Update())
+                .Subscribe(_ =>
+                {
+                    if (IsAlive() && Enabled) Update();
+                })
                 .RegisterTo(State.OnDestroyCts.Token);
         }
 
@@ -62,6 +67,6 @@ namespace BugColony.Scripts.Bugs
         
         public virtual Vector3 GetPosition() => View.transform.position;
 
-        public virtual bool IsAlive() => !State.IsDead;
+        public virtual bool IsAlive() => !State.IsDead && State.Enabled;
     }
 }

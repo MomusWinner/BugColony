@@ -1,5 +1,6 @@
 ﻿using BugColony.Scripts.Settings.Bugs;
 using BugColony.Scripts.Settings.Bugs.Behaviours.Splits;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace BugColony.Scripts.Bugs.Behaviours.Splits
@@ -12,6 +13,7 @@ namespace BugColony.Scripts.Bugs.Behaviours.Splits
         private readonly BugSettings _settings;
         private readonly BugMutationSplitSettings _splitSettings;
         private readonly AliveBugCollection _aliveBugCollection;
+        private bool _isSplitting;
         
         public BugMutationSplit(
             BugSettings settings,
@@ -29,11 +31,8 @@ namespace BugColony.Scripts.Bugs.Behaviours.Splits
             _aliveBugCollection = aliveBugCollection;
         }
 
-        public bool CanSplit()
-        {
-            return _state.Energy > _splitSettings.RequiredEnergyForSplitting;
-        }
-        
+        public bool CanSplit() => _state.Energy >= _splitSettings.RequiredEnergyForSplitting && !_isSplitting;
+
         public void Split()
         {
             if (!CanSplit()) return;
@@ -46,20 +45,40 @@ namespace BugColony.Scripts.Bugs.Behaviours.Splits
             }
             newBug ??= _factory.Create(_settings);
             
+            Split(newBug).Forget();
+        }
+
+        public bool IsSplitting()
+        {
+            return _isSplitting;
+        }
+
+        private async UniTaskVoid Split(Bug clone)
+        {
+            clone.Enabled = false;
+            _state.Enabled = false;
+            Vector3 startPos = _view.transform.position;
             _state.Energy = 0;
             
             int newGen = Random.Range(0, int.MaxValue);
-            newBug.Gen = newGen;
+            clone.Gen = newGen;
             _state.Gen = newGen;
             
-            Vector3 startPos = _view.transform.position;
-            newBug.Position = RandomPosition(startPos);
-            _view.transform.position = RandomPosition(startPos);
+            _view.transform.position = startPos;
+            clone.View.transform.position = startPos;
+            await UniTask.WhenAll(
+                _view.StartSplitAnimation(RandomPosition(startPos)),
+                clone.View.StartSplitAnimation(RandomPosition(startPos))
+            );
+            _isSplitting = false;
+            clone.Enabled = true;
+            _state.Enabled = true;
         }
 
         private Vector3 RandomPosition(Vector3 origin)
         {
-            return origin + new Vector3(Random.Range(-1, 1), origin.y, Random.Range(-1, 1)) * _splitSettings.SpawnRadius;
+            Vector2 circle = Random.insideUnitCircle;
+            return origin + new Vector3(circle.x, origin.y, circle.y) * _splitSettings.SpawnRadius;
         }
     }
 }
