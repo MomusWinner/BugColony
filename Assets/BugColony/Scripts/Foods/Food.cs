@@ -4,13 +4,20 @@ using UnityEngine;
 
 namespace BugColony.Scripts.Foods
 {
-    public class Food : MonoBehaviour, IEatable, ITarget
+    public class Food : MonoBehaviour, ITarget
     {
         public event Action<Food> Destroyed;
         
         public int NutritionalValue { get; set; }
 
         public ResourceType ResourceType => ResourceType.Food;
+
+        private bool _isDestroyed;
+
+        private void OnDestroy()
+        {
+            _isDestroyed = true;
+        }
 
         public int Eat()
         {
@@ -19,6 +26,7 @@ namespace BugColony.Scripts.Foods
             return NutritionalValue;
         }
 
-        public Transform GetTarget() => transform;
+        public Vector3 GetPosition() => transform.position;
+        public bool IsAlive() => !_isDestroyed;
     }
 }

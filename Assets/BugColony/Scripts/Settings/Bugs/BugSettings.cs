@@ -11,14 +11,11 @@ namespace BugColony.Scripts.Settings.Bugs
         [SerializeField] private BugView _prefab;
         public BugView Prefab => _prefab;
         
-        [SerializeField] private EatingType _eatingType;
-        public EatingType EatingType => _eatingType;
-        
-        [SerializeField] private float _moveSpeed;
-        public float MoveSpeed => _moveSpeed;
-        
         [SerializeField] private int _nutritionalValue;
         public int NutritionalValue => _nutritionalValue;
+
+        [SerializeField] private float _eatingDistance;
+        public float EatingDistance => _eatingDistance;
         
         [SerializeField] private ResourceType _diet;
         public ResourceType Diet => _diet;

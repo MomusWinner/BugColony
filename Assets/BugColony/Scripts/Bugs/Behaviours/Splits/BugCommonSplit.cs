@@ -44,7 +44,7 @@ namespace BugColony.Scripts.Bugs.Behaviours.Splits
             newBug.Gen = newGen;
             _state.Gen = newGen;
             
-            newBug.Movable.Position = _state.Movable.Position;
+            newBug.Movable.position = _state.Movable.position;
 
             return true;
         }

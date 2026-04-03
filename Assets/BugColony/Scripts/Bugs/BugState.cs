@@ -5,18 +5,18 @@ namespace BugColony.Scripts.Bugs
 {
     public class BugState
     {
-        public IMovable Movable;
+        public Transform Movable;
         public int Energy;
         public int Gen;
-        public Transform Target;
-        public readonly CancellationTokenSource CancellationTokenSource = new();
+        public ITarget Target;
+        public readonly CancellationTokenSource OnDestroyCts = new();
+        public bool IsDead;
         
-        public void Reset()
+        public void Dispose()
         {
-            CancellationTokenSource.Cancel();
+            OnDestroyCts?.Cancel();
+            OnDestroyCts?.Dispose();
             Energy = 0; 
-            Gen = 0; 
-            Movable = null;
         }
     }
 }

@@ -29,7 +29,7 @@ namespace BugColony.Scripts.Bugs
         private void SpawnWorkerBug()
         {
             var bug = _factory.Create(_bugSettings.BugSettings[0]);
-            bug.Movable.Position = RandomHelper.InsideBounds(_gameSettings.ArenaBounds);
+            bug.Movable.position = RandomHelper.InsideBounds(_gameSettings.ArenaBounds);
         }
 
         public void Dispose()

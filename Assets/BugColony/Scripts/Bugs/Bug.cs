@@ -4,20 +4,20 @@ using BugColony.Scripts.Bugs.Behaviours.Eating;
 using BugColony.Scripts.Bugs.Behaviours.Movement;
 using BugColony.Scripts.Bugs.Behaviours.Splits;
 using BugColony.Scripts.Settings.Bugs;
+using Cysharp.Threading.Tasks;
 using R3;
 using UnityEngine;
 using VContainer;
 
 namespace BugColony.Scripts.Bugs
 {
-    public class Bug : IEatable, ITarget
+    public class Bug : ITarget
     {
         public event Action<Bug> OnDie;
-        
         public ResourceType ResourceType => ResourceType.Bug;
         public int Gen { get => _state.Gen; set => _state.Gen = value;}
         public ResourceType Diet => _settings.Diet;
-        public IMovable Movable => _state.Movable;
+        public Transform Movable => _state.Movable;
         
         [Inject] private BugView _view;
         [Inject] private BugState _state;
@@ -26,71 +26,85 @@ namespace BugColony.Scripts.Bugs
         [Inject] private IBugMovement _movementBehaviour;
         [Inject] private IBugSplit _splitBehaviour;
         [Inject] private IBugTargetSelector _targetSelector;
+        
+        private bool _isEating;
 
         public void Start()
         {
-            _view.Bug = this;
-            _view.Destroyed += _ => _state.Reset();
-            _view.OnCollided += eatable =>
+            _view.Destroyed += _ =>
             {
-                if (IsEatable(eatable)) _eatingBehaviour.EatResource(eatable);
+                if (IsAlive()) Die().Forget();
             };
             
-            _state.Movable = _view;
+            _state.Movable = _view.transform;
             
             if (_settings.HasLifeTime)
             {
                 Observable
                     .Interval(TimeSpan.FromSeconds(_settings.LifeTime))
                     .Subscribe(_ => Die())
-                    .RegisterTo(_state.CancellationTokenSource.Token);
+                    .RegisterTo(_state.OnDestroyCts.Token);
             }
             
             Observable
-                .EveryUpdate(_state.CancellationTokenSource.Token)
+                .EveryUpdate(_state.OnDestroyCts.Token)
                 .Subscribe(_ => Update())
-                .RegisterTo(_state.CancellationTokenSource.Token);
-            
-            _targetSelector.StartTargetSearch();
+                .RegisterTo(_state.OnDestroyCts.Token);
         }
 
         private void Update()
         {
-            if (_state.Target)
-                _movementBehaviour.MoveToTarget(_state.Target.position);
+            if (_isEating) return;
+            if (_state.Target is null || !_state.Target.IsAlive()) 
+                _state.Target = _targetSelector.GetTarget();
+            
+            if (_state.Target is not null && _state.Target.IsAlive())
+            {
+                if ((_state.Target.GetPosition() - Movable.position).magnitude <= _settings.EatingDistance)
+                {
+                    EatWithDelayAsync().Forget();
+                }
+                else
+                {
+                    _movementBehaviour.MoveToTarget(_state.Target.GetPosition());
+                }
+            }
             _splitBehaviour.TrySplit();
         }
 
         public int Eat()
         {
-            Die();
+            Die().Forget();
             return _settings.NutritionalValue;
         }
 
-        public void MoveToTarget(Vector3 pos)
+        private async UniTaskVoid Die()
         {
-            _movementBehaviour.MoveToTarget(pos);
-        }
-
-        public void EatResource(IEatable eatable) 
-        {
-            _eatingBehaviour.EatResource(eatable);
-        }
-
-        public void Die()
-        {
-            _state.Reset();
-            _view.Destroy();
+            _state.IsDead = true;
+            _state.Dispose();
             OnDie?.Invoke(this);
+            if (_view.IsAlive())
+            {
+                await _view.StartDieAnimation();
+                _view.Destroy();
+            }
         }
         
-        public Transform GetTarget() => _view.GetTarget();
+        public Vector3 GetPosition() => Movable.position;
 
-        private bool IsEatable(IEatable eatable)
+        public bool IsAlive() => !_state.IsDead;
+
+        
+        private async UniTaskVoid EatWithDelayAsync()
         {
-            if (eatable is Bug bug && bug.Gen == Gen)
-                return false;
-            return Diet.HasFlag(eatable.ResourceType);
+            _isEating = true;
+            await _view.StartEatAnimation(_state.Target.GetPosition());
+            
+            if (_state.OnDestroyCts.IsCancellationRequested)
+                return;
+            if (_state.Target != null && _state.Target.IsAlive())
+                _state.Energy = _state.Target.Eat();
+            _isEating = false;
         }
     }
 }

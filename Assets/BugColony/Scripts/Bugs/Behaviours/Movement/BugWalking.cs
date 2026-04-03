@@ -16,9 +16,8 @@ namespace BugColony.Scripts.Bugs.Behaviours.Movement
 
         public void MoveToTarget(Vector3 target)
         {
-            IMovable movable = _state.Movable;
-            Vector3 dir = (target - movable.Position).normalized;
-            movable.Position += dir * (Speed * Time.deltaTime);
+            Vector3 dir = (target - _state.Movable.position).normalized;
+            _state.Movable.position += dir * (Speed * Time.deltaTime);
         }
     }
 }

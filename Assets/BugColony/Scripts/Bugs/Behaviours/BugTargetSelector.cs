@@ -2,7 +2,6 @@
 using System.Linq;
 using BugColony.Scripts.Foods;
 using BugColony.Scripts.Settings.Bugs;
-using R3;
 using UnityEngine;
 
 namespace BugColony.Scripts.Bugs.Behaviours
@@ -22,24 +21,12 @@ namespace BugColony.Scripts.Bugs.Behaviours
             _settings = settings;
         }
 
-        public void StartTargetSearch()
-        {
-            Observable
-                .EveryUpdate()
-                .Subscribe(_ =>
-                {
-                    if (!_state.Target)
-                        _state.Target = GetNearestTarget();
-                })
-                .RegisterTo(_state.CancellationTokenSource.Token);
-        }
-
-        public Transform GetNearestTarget()
+        public ITarget GetTarget()
         {
             ResourceType diet = _settings.Diet;
             float minDistance = float.MaxValue;
-            Transform target = null;
-            Vector3 position = _state.Movable.Position;
+            ITarget target = null;
+            Vector3 position = _state.Movable.position;
 
             if (diet.HasFlag(ResourceType.Bug))
             {
@@ -64,16 +51,15 @@ namespace BugColony.Scripts.Bugs.Behaviours
             return target;
         }
         
-        private void FindNearest(IEnumerable<ITarget> items, Vector3 position, ref float minDistance, ref Transform target)
+        private void FindNearest(IEnumerable<ITarget> targets, Vector3 position, ref float minDistance, ref ITarget target)
         {
-            foreach (var item in items)
+            foreach (var t in targets)
             {
-                float distance = (item.GetTarget().position - position).sqrMagnitude;
-                if (distance < minDistance)
-                {
-                    minDistance = distance;
-                    target = item.GetTarget();
-                }
+                if (!t.IsAlive()) continue;
+                float distance = (t.GetPosition() - position).sqrMagnitude;
+                if (!(distance < minDistance)) continue;
+                minDistance = distance;
+                target =  t;
             }
         }
     

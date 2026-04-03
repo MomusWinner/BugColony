@@ -2,8 +2,9 @@ using UnityEngine;
 
 namespace BugColony.Scripts.Bugs
 {
-    public interface ITarget
+    public interface ITarget : IEatable
     {
-        Transform GetTarget();
+        Vector3 GetPosition();
+        bool IsAlive();
     }
 }
