@@ -11,3 +11,4 @@
  - R3
  - UniTask
  - MessagePipe
+ - Tri Inspector
