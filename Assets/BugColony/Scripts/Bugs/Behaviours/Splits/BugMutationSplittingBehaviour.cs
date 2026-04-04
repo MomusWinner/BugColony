@@ -1,11 +1,12 @@
-﻿using BugColony.Scripts.Settings.Bugs;
+﻿using System.Threading;
+using BugColony.Scripts.Settings.Bugs;
 using BugColony.Scripts.Settings.Bugs.Behaviours.Splits;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace BugColony.Scripts.Bugs.Behaviours.Splits
 {
-    public class BugMutationSplit : IBugSplit
+    public class BugMutationSplittingBehaviour : IBugSplittingBehaviour
     {
         private readonly BugState _state;
         private readonly BugView _view;
@@ -13,9 +14,8 @@ namespace BugColony.Scripts.Bugs.Behaviours.Splits
         private readonly BugSettings _settings;
         private readonly BugMutationSplitSettings _splitSettings;
         private readonly AliveBugCollection _aliveBugCollection;
-        private bool _isSplitting;
         
-        public BugMutationSplit(
+        public BugMutationSplittingBehaviour(
             BugSettings settings,
             BugMutationSplitSettings splitSettings,
             BugState state,
@@ -31,34 +31,25 @@ namespace BugColony.Scripts.Bugs.Behaviours.Splits
             _aliveBugCollection = aliveBugCollection;
         }
 
-        public bool CanSplit() => _state.Energy >= _splitSettings.RequiredEnergyForSplitting && !_isSplitting;
+        public bool CanSplit() => _state.Energy >= _splitSettings.RequiredEnergyForSplitting;
 
-        public void Split()
+        public async UniTask Split(CancellationToken ct)
         {
             if (!CanSplit()) return;
             
-            Bug newBug = null;
+            Bug clone = null;
             if (_splitSettings.RequiredBugCount <= _aliveBugCollection.Bugs.Count)
             {
                 if (Random.value <= _splitSettings.Chance)
-                    newBug = _factory.Create(_splitSettings.MutatedBug);
+                    clone = _factory.Create(_splitSettings.MutatedBug);
             }
-            newBug ??= _factory.Create(_settings);
+            clone ??= _factory.Create(_settings);
             
-            Split(newBug).Forget();
-        }
-
-        public bool IsSplitting()
-        {
-            return _isSplitting;
-        }
-
-        private async UniTaskVoid Split(Bug clone)
-        {
             clone.Enabled = false;
             _state.Enabled = false;
             Vector3 startPos = _view.transform.position;
             _state.Energy = 0;
+            _state.CreationTime = Time.time;
             
             int newGen = Random.Range(0, int.MaxValue);
             clone.Gen = newGen;
@@ -67,10 +58,9 @@ namespace BugColony.Scripts.Bugs.Behaviours.Splits
             _view.transform.position = startPos;
             clone.View.transform.position = startPos;
             await UniTask.WhenAll(
-                _view.StartSplitAnimation(RandomPosition(startPos)),
-                clone.View.StartSplitAnimation(RandomPosition(startPos))
+                _view.StartSplitAnimation(RandomPosition(startPos), ct),
+                clone.View.StartSplitAnimation(RandomPosition(startPos), ct)
             );
-            _isSplitting = false;
             clone.Enabled = true;
             _state.Enabled = true;
         }

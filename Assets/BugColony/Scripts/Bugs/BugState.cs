@@ -10,6 +10,7 @@ namespace BugColony.Scripts.Bugs
         public readonly CancellationTokenSource OnDestroyCts = new();
         public bool Enabled = true;
         public bool IsDead;
+        public float CreationTime;
         
         public void Dispose()
         {

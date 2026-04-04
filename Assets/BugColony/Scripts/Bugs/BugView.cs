@@ -6,16 +6,14 @@ using UnityEngine;
 
 namespace BugColony.Scripts.Bugs
 {
+    [RequireComponent(typeof(Collider))]
     public class BugView : MonoBehaviour
     {
         public event Action<BugView> Destroyed;
         
         [SerializeField] private Collider _collider;
         private bool _isDestroyed;
-        private bool _isRunning;
-        private CancellationTokenSource _animationCts = new();
-        private CancellationTokenSource _runningCts = new();
-
+        
         public void Awake()
         {
             _collider = GetComponent<Collider>();
@@ -31,81 +29,73 @@ namespace BugColony.Scripts.Bugs
         public void Destroy()
         {
             if (_isDestroyed) return;
+            transform.DOKill();
             Destroy(gameObject);
         }
         
         public bool IsAlive() => !_isDestroyed;
 
-        public void BeginRunAnimation()
+        public void BeginRunAnimation(CancellationToken token)
         {
-            if (_isRunning) return;
-            _isRunning = true;
+            ResetAnimation();
             transform
-                .DOScale(new Vector3(transform.localScale.x, 1.1f, transform.localScale.z), 0.3f)
+                .DOScale(new Vector3(transform.localScale.x, 1.5f, transform.localScale.z), 0.3f)
                 .SetLoops(-1, LoopType.Yoyo)
-                .SetEase(Ease.InOutSine).WithCancellation(_runningCts.Token);
+                .SetEase(Ease.InOutSine)
+                .WithCancellation(token);
         }
 
         public void EndRunAnimation()
         {
-            if (!_isRunning) return;
-            _isRunning = false;
-            ResetRunningAnimationCts();
+            ResetAnimation();
+            transform.localScale = Vector3.one;
         }
         
-        public UniTask StartEatAnimation(Vector3 targetPosition)
+        public UniTask StartEatAnimation(Vector3 targetPosition, CancellationToken token = default)
         {
-            ResetAnimationCts();
+            ResetAnimation();
             Vector3 startPosition = transform.position;
             Vector3 dir = targetPosition - transform.position;
             dir.y = 0;
             transform.rotation = Quaternion.LookRotation(dir);
             _collider.enabled = false;
+            
             return DOTween.Sequence()
                 .AppendInterval(0.1f)
                 .Append(transform.DOMove(transform.position + transform.forward * 1.0f, 0.2f))
                 .Append(transform.DOMove(startPosition, 0.1f))
                 .AppendInterval(0.1f)
                 .OnComplete(() => _collider.enabled = true)
-                .AwaitForComplete(TweenCancelBehaviour.Complete, _animationCts.Token);
+                .WithCancellation(token);
         }
 
-        public UniTask StartSplitAnimation(Vector3 newPosition)
+        public UniTask StartSplitAnimation(Vector3 newPosition, CancellationToken cancellationToken = default)
         {
-            ResetAnimationCts();
+            ResetAnimation();
             _collider.enabled = false;
-
+            
             return DOTween.Sequence()
                 .AppendInterval(0.1f)
                 .Append(transform.DOJump(newPosition, 1.5f, 1, 0.4f))
                 .Append(transform.DOScale(transform.localScale * 1.2f, 0.1f).SetLoops(2, LoopType.Yoyo))
                 .AppendInterval(0.1f)
                 .OnComplete(() => _collider.enabled = true)
-                .AwaitForComplete(TweenCancelBehaviour.Complete, _animationCts.Token);
+                .WithCancellation(cancellationToken);
         }
 
-        public UniTask StartDieAnimation()
+        public UniTask StartDieAnimation(CancellationToken token = default)
         {
-            ResetAnimationCts();
-            ResetRunningAnimationCts();
+            ResetAnimation();
             return DOTween.Sequence()
                 .Append(transform.DOMove(transform.position - Vector3.up * 0.8f,2f))
                 .AppendInterval(0.3f)
-                .WithCancellation(this.GetCancellationTokenOnDestroy());
+                .WithCancellation(token);
         }
 
-        private void ResetAnimationCts()
+        private void ResetAnimation()
         {
-            _animationCts.Cancel();
-            _animationCts.Dispose();
-            _animationCts = new CancellationTokenSource();
-        }
-        
-        private void ResetRunningAnimationCts()
-        {
-            _runningCts.Cancel();
-            _runningCts.Dispose();
-            _runningCts = new CancellationTokenSource();
+            transform.localScale = Vector3.one;
+            transform.DOKill(true);
         }
     }
 }

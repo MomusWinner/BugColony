@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Threading;
 using BugColony.Scripts.Settings.Bugs;
 using Cysharp.Threading.Tasks;
-using R3;
 using UnityEngine;
 using VContainer;
 
@@ -23,29 +23,38 @@ namespace BugColony.Scripts.Bugs
         
         public virtual void Start()
         {
+            State.CreationTime = Time.time;
+            
             View.Destroyed += _ =>
             {
                 if (IsAlive()) State.Dispose();;
             };
             
-            if (Settings.HasLifeTime)
-            {
-                Observable
-                    .Interval(TimeSpan.FromSeconds(Settings.LifeTime))
-                    .Subscribe(_ => Die().Forget())
-                    .RegisterTo(State.OnDestroyCts.Token);
-            }
-            
-            Observable
-                .EveryUpdate(State.OnDestroyCts.Token)
-                .Subscribe(_ =>
-                {
-                    if (IsAlive() && Enabled) Update();
-                })
-                .RegisterTo(State.OnDestroyCts.Token);
+            StartUpdating().Forget();
         }
 
-        protected abstract void Update();
+        protected abstract UniTask Update(CancellationToken token);
+        private async UniTaskVoid StartUpdating()
+        {
+            try
+            {
+                var token = State.OnDestroyCts.Token;
+                while (!State.OnDestroyCts.IsCancellationRequested)
+                {
+                    await UniTask.Yield(token, true);
+                    if (Settings.HasLifeTime &&  Time.time - State.CreationTime > Settings.LifeTime)
+                    {
+                        Die().Forget();
+                        break;
+                    }
+                    if (!State.Enabled) continue;
+                    await Update(token);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+            }
+        }
 
         public virtual int Eat()
         {
@@ -67,6 +76,6 @@ namespace BugColony.Scripts.Bugs
         
         public virtual Vector3 GetPosition() => View.transform.position;
 
-        public virtual bool IsAlive() => !State.IsDead && State.Enabled;
+        public virtual bool IsAlive() => !State.IsDead && State.Enabled && View;
     }
 }

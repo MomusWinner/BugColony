@@ -18,7 +18,7 @@ namespace BugColony.Scripts.LifetimeScopes.Bugs.Behaviours
             if (!_settingTypeToBehaviour.TryGetValue(settings.GetType(), out var behaviour))
                 throw new ArgumentException("Your bug movement settings are not registered.");
             builder.RegisterInstance(settings).As(settings.GetType());
-            builder.Register(behaviour, Lifetime.Scoped).As(typeof(IBugMovement));
+            builder.Register(behaviour, Lifetime.Scoped).As(typeof(IBugMovementBehaviour));
         }
     }
 }

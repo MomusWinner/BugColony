@@ -10,7 +10,7 @@ namespace BugColony.Scripts.LifetimeScopes.Bugs.Behaviours
     {
         private static Dictionary<Type, Type> _settingTypeToBehaviour = new()
         {
-            { typeof(BugMutationSplitSettings), typeof(BugMutationSplit) },
+            { typeof(BugMutationSplitSettings), typeof(BugMutationSplittingBehaviour) },
         };
         
         public static void RegisterBugSplitBehaviour(this IContainerBuilder builder, BugSplitSettings settings)
@@ -18,7 +18,7 @@ namespace BugColony.Scripts.LifetimeScopes.Bugs.Behaviours
             if (!_settingTypeToBehaviour.TryGetValue(settings.GetType(), out var behaviour))
                 throw new ArgumentException("Your bug split settings are not registered.");
             builder.RegisterInstance(settings).As(settings.GetType());
-            builder.Register(behaviour, Lifetime.Scoped).As(typeof(IBugSplit));
+            builder.Register(behaviour, Lifetime.Scoped).As(typeof(IBugSplittingBehaviour));
         }
     }
 }

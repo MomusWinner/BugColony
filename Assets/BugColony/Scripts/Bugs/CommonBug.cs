@@ -1,4 +1,6 @@
-﻿using BugColony.Scripts.Bugs.Behaviours.Movements;
+﻿using System.Threading;
+using BugColony.Scripts.Bugs.Behaviours.EatingBehaviours;
+using BugColony.Scripts.Bugs.Behaviours.Movements;
 using BugColony.Scripts.Bugs.Behaviours.Splits;
 using BugColony.Scripts.Bugs.Behaviours.TargetSelectors;
 using Cysharp.Threading.Tasks;
@@ -8,22 +10,18 @@ namespace BugColony.Scripts.Bugs
 {
     public sealed class CommonBug : Bug
     {
-        [Inject] private IBugMovement _movementBehaviour;
-        [Inject] private IBugSplit _splitBehaviour;
+        [Inject] private IBugMovementBehaviour _movementBehaviour;
+        [Inject] private IBugSplittingBehaviour _splittingBehaviourBehaviour;
         [Inject] private IBugTargetSelector _targetSelector;
+        [Inject] private IBugEatingBehaviour _eatingBehaviour;
         
-        private bool _isEating;
-        
-        protected override void Update()
+        protected override async UniTask Update(CancellationToken token)
         {
-            if (_splitBehaviour.CanSplit() && !_isEating)
+            if (_splittingBehaviourBehaviour.CanSplit())
             {
                 _movementBehaviour.StopMoving();
-                _splitBehaviour.Split();
-                return;
+                await _splittingBehaviourBehaviour.Split(token);
             }
-            
-            if (_isEating || _splitBehaviour.IsSplitting()) return;
             
             if (State.Target is null || !State.Target.IsAlive())
                 State.Target = _targetSelector.GetTarget();
@@ -33,25 +31,13 @@ namespace BugColony.Scripts.Bugs
                 if ((State.Target.GetPosition() - Position).magnitude <= Settings.EatingDistance)
                 {
                     _movementBehaviour.StopMoving();
-                    EatWithDelayAsync().Forget();
+                    await _eatingBehaviour.Eat(State.Target, token);
                 }
                 else
                 {
-                    _movementBehaviour.MoveToTarget(State.Target.GetPosition());
+                    _movementBehaviour.MoveToTarget(State.Target.GetPosition(), token).Forget();
                 }
             }
-        }
-        
-        private async UniTaskVoid EatWithDelayAsync()
-        {
-            _isEating = true;
-            await View.StartEatAnimation(State.Target.GetPosition());
-            
-            if (State.OnDestroyCts.IsCancellationRequested)
-                return;
-            if (State.Target != null && State.Target.IsAlive())
-                State.Energy += State.Target.Eat();
-            _isEating = false;
         }
     }
 }

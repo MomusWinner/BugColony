@@ -36,7 +36,7 @@ namespace BugColony.Scripts.Foods
         private void OnDestroy()
         {
             _isActive = false;
-            transform.DOKill(true);
+            transform.DOKill();
         }
         
         private void ReturnToPool()
