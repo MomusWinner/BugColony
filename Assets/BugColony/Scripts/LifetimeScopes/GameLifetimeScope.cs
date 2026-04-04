@@ -20,12 +20,10 @@ namespace BugColony.Scripts.LifetimeScopes
             builder.RegisterInstance(_gameSettings);
             
             builder.Register<AliveBugCollection>(Lifetime.Singleton);
-            builder.Register<BugFactory>(Lifetime.Singleton).As<IBugFactory>();
-            builder.Register<BugSpawner>(Lifetime.Singleton);
+            builder.Register<IBugFactory, BugFactory>(Lifetime.Singleton);
             
             builder.Register<AliveFoodCollection>(Lifetime.Singleton);
             builder.RegisterEntryPoint<FoodPool>().As<IFoodFactory>();
-            builder.Register<FoodSpawner>(Lifetime.Singleton);
             
             builder.RegisterEntryPoint<ScoreManager>().AsSelf();
 
