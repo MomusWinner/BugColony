@@ -24,7 +24,7 @@ namespace BugColony.Scripts.LifetimeScopes.Bugs
             builder.Register(_ => new BugState(), Lifetime.Scoped);
             builder.RegisterBugMovementBehaviour(settings.MovementSettings);
             builder.RegisterBugSplitBehaviour(settings.SplitSettings);
-            builder.Register<IBugTargetSelector, BugNearestTargetSelector>(Lifetime.Scoped);
+            builder.Register<IBugTargetFinder, BugNearestTargetFinder>(Lifetime.Scoped);
             builder.Register<IBugEatingBehaviour, BugEatingBehaviour>(Lifetime.Scoped);
             builder.Register<IBugSplittingBehaviour, BugMutationSplittingBehaviour>(Lifetime.Scoped);
             builder.RegisterComponentInNewPrefab(settings.Prefab, Lifetime.Scoped);

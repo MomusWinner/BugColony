@@ -12,7 +12,7 @@ namespace BugColony.Scripts.Bugs
     {
         [Inject] private IBugMovementBehaviour _movementBehaviour;
         [Inject] private IBugSplittingBehaviour _splittingBehaviourBehaviour;
-        [Inject] private IBugTargetSelector _targetSelector;
+        [Inject] private IBugTargetFinder _targetFinder;
         [Inject] private IBugEatingBehaviour _eatingBehaviour;
         
         protected override async UniTask Update(CancellationToken token)
@@ -24,7 +24,7 @@ namespace BugColony.Scripts.Bugs
             }
             
             if (State.Target is null || !State.Target.IsAlive())
-                State.Target = _targetSelector.GetTarget();
+                State.Target = _targetFinder.GetTarget();
             
             if (State.Target is not null && State.Target.IsAlive())
             {

@@ -1,6 +1,6 @@
 namespace BugColony.Scripts.Bugs.Behaviours.TargetSelectors
 {
-    public interface IBugTargetSelector
+    public interface IBugTargetFinder
     {
         public ITarget GetTarget();
     }

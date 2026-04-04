@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BugColony.Scripts.Bugs.Behaviours.TargetSelectors
 {
-    public class BugNearestTargetSelector : IBugTargetSelector
+    public class BugNearestTargetFinder : IBugTargetFinder
     {
         private readonly AliveBugCollection _aliveBugCollection;
         private readonly AliveFoodCollection _aliveFoodCollection;
@@ -14,7 +14,7 @@ namespace BugColony.Scripts.Bugs.Behaviours.TargetSelectors
         private readonly BugView _view;
         private readonly BugSettings _settings;
 
-        public BugNearestTargetSelector(AliveBugCollection aliveBugCollection,
+        public BugNearestTargetFinder(AliveBugCollection aliveBugCollection,
             AliveFoodCollection aliveFoodManage,
             BugState state,
             BugView view,
