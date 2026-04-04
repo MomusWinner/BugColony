@@ -2,7 +2,7 @@
 using R3;
 using UnityEngine;
 
-namespace BugColony.Scripts.Bugs.Behaviours.Movement
+namespace BugColony.Scripts.Bugs.Behaviours.Movements
 {
     public class BugWalking : IBugMovement
     {

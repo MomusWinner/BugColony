@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using BugColony.Scripts.Bugs.Behaviours.Movement;
+using BugColony.Scripts.Bugs.Behaviours.Movements;
 using BugColony.Scripts.Settings.Bugs.Behaviours.Movements;
 using VContainer;
 

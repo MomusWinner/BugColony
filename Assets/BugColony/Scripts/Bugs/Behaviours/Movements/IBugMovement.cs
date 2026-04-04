@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace BugColony.Scripts.Bugs.Behaviours.Movement
+namespace BugColony.Scripts.Bugs.Behaviours.Movements
 {
     public interface IBugMovement
     {

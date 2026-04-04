@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using BugColony.Scripts.Bugs;
-using BugColony.Scripts.Bugs.Behaviours;
 using BugColony.Scripts.Bugs.Behaviours.Splits;
+using BugColony.Scripts.Bugs.Behaviours.TargetSelectors;
 using BugColony.Scripts.LifetimeScopes.Bugs.Behaviours;
 using BugColony.Scripts.Settings.Bugs;
 using VContainer;
@@ -23,7 +23,7 @@ namespace BugColony.Scripts.LifetimeScopes.Bugs
             builder.Register(_ => new BugState(), Lifetime.Scoped);
             builder.RegisterBugMovementBehaviour(settings.MovementSettings);
             builder.RegisterBugSplitBehaviour(settings.SplitSettings);
-            builder.Register<IBugTargetSelector, BugTargetSelector>(Lifetime.Scoped);
+            builder.Register<IBugTargetSelector, BugNearestTargetSelector>(Lifetime.Scoped);
             builder.Register<IBugSplit, BugMutationSplit>(Lifetime.Scoped);
             builder.RegisterComponentInNewPrefab(settings.Prefab, Lifetime.Scoped);
             

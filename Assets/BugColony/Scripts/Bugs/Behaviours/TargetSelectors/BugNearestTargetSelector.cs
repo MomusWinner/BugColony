@@ -4,9 +4,9 @@ using BugColony.Scripts.Foods;
 using BugColony.Scripts.Settings.Bugs;
 using UnityEngine;
 
-namespace BugColony.Scripts.Bugs.Behaviours
+namespace BugColony.Scripts.Bugs.Behaviours.TargetSelectors
 {
-    public class BugTargetSelector : IBugTargetSelector
+    public class BugNearestTargetSelector : IBugTargetSelector
     {
         private readonly AliveBugCollection _aliveBugCollection;
         private readonly AliveFoodCollection _aliveFoodCollection;
@@ -14,7 +14,7 @@ namespace BugColony.Scripts.Bugs.Behaviours
         private readonly BugView _view;
         private readonly BugSettings _settings;
 
-        public BugTargetSelector(AliveBugCollection aliveBugCollection,
+        public BugNearestTargetSelector(AliveBugCollection aliveBugCollection,
             AliveFoodCollection aliveFoodManage,
             BugState state,
             BugView view,

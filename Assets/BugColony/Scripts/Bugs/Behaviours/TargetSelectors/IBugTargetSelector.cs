@@ -1,4 +1,4 @@
-namespace BugColony.Scripts.Bugs.Behaviours
+namespace BugColony.Scripts.Bugs.Behaviours.TargetSelectors
 {
     public interface IBugTargetSelector
     {

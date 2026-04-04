@@ -1,6 +1,6 @@
-﻿using BugColony.Scripts.Bugs.Behaviours;
-using BugColony.Scripts.Bugs.Behaviours.Movement;
+﻿using BugColony.Scripts.Bugs.Behaviours.Movements;
 using BugColony.Scripts.Bugs.Behaviours.Splits;
+using BugColony.Scripts.Bugs.Behaviours.TargetSelectors;
 using Cysharp.Threading.Tasks;
 using VContainer;
 
