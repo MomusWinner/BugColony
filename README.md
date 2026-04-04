@@ -1,6 +1,6 @@
 # Bug Colony
 
-![Preview](https://github.com/user-attachments/assets/01027b8b-f418-424f-99df-f133609e0f27)
+![Preview](https://github.com/user-attachments/assets/1acec63c-8c6d-465f-a642-398abf615904)
 
 # Installation
 1. Load project from repositorty `git clone https://github.com/MomusWinner/BugColony`.
