@@ -3,12 +3,12 @@ using Cysharp.Threading.Tasks;
 
 namespace BugColony.Scripts.Bugs.Behaviours.EatingBehaviours
 {
-    public class BugCommonEatingBehaviour : IBugEatingBehaviour
+    public class BugEatingBehaviour : IBugEatingBehaviour
     {
         private readonly BugView _view;
         private readonly BugState _state;
 
-        public BugCommonEatingBehaviour(BugView view, BugState state)
+        public BugEatingBehaviour(BugView view, BugState state)
         {
             _view = view;
             _state = state;

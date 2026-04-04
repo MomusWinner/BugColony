@@ -25,7 +25,7 @@ namespace BugColony.Scripts.LifetimeScopes.Bugs
             builder.RegisterBugMovementBehaviour(settings.MovementSettings);
             builder.RegisterBugSplitBehaviour(settings.SplitSettings);
             builder.Register<IBugTargetSelector, BugNearestTargetSelector>(Lifetime.Scoped);
-            builder.Register<IBugEatingBehaviour, BugCommonEatingBehaviour>(Lifetime.Scoped);
+            builder.Register<IBugEatingBehaviour, BugEatingBehaviour>(Lifetime.Scoped);
             builder.Register<IBugSplittingBehaviour, BugMutationSplittingBehaviour>(Lifetime.Scoped);
             builder.RegisterComponentInNewPrefab(settings.Prefab, Lifetime.Scoped);
             
